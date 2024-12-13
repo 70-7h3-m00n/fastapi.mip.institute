@@ -85,7 +85,7 @@ async def payment_notification(request: Request, background_tasks: BackgroundTas
 
     if float(parsed_data.get("Amount", 0)) != float(parsed_data.get("PaymentAmount", 0)):
         logger.error(f"Payment amount mismatch for transaction {transaction_id}: Amount: "
-                     f"{float(parsed_data.get("Amount", 0))}, PaymentAmount: {float(parsed_data.get("Amount", 0))} ")
+                     f"{float(parsed_data.get('Amount', 0))}, PaymentAmount: {float(parsed_data.get('Amount', 0))} ")
         raise HTTPException(status_code=400, detail="Payment amount mismatch")
 
     return {"code": 0}
