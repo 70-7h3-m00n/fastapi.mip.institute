@@ -14,9 +14,9 @@ async def send_email_success(to_email, subject, body):
     """Send an email using smtp protocol."""
     await asleep(6)
     try:
-        smtp_server = 'smtp.gmail.com'
+        smtp_server = 'smtp.yandex.com'
         smtp_port = 587
-        smtp_user = 'riptmy@gmail.com'
+        smtp_user = 'notify@mip.institute'
         smtp_password = os.getenv("EMAIL_PASSWORD")
 
         msg = MIMEMultipart()
