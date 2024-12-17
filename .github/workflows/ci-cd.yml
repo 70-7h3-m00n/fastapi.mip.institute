@@ -38,3 +38,4 @@ jobs:
           docker pull ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}:${{ github.ref_name }}
           docker-compose -f /opt/pmnts/fa-payments/docker-compose.${{ github.ref_name }}.yml down
           docker-compose -f /opt/pmnts/fa-payments/docker-compose.${{ github.ref_name }}.yml up -d
+
