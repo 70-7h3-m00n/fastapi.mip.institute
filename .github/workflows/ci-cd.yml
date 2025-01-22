@@ -73,6 +73,7 @@ jobs:
         name: Use Production Docker Compose File
         run: |
           docker context use remote
+          ls
           cd ${{ secrets.WORK_DIR }}
           cp docker-compose.prod.yml docker-compose.yml
         env:
