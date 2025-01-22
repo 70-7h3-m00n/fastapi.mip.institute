@@ -51,7 +51,7 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H "${{ secrets.REMOTE_HOST }}" > ~/.ssh/known_hosts
-          docker context create remote --docker host=ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
+#          docker context create remote --docker host=ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
 
       - uses: actions/checkout@v3
 
@@ -72,9 +72,6 @@ jobs:
       - if: github.ref == 'refs/heads/main'
         name: Use Production Docker Compose File
         run: |
-          docker context use remote
-          ls
-          cd ${{ secrets.WORK_DIR }}
           cp docker-compose.prod.yml docker-compose.yml
         env:
           CI_JOB_NUMBER: 1
@@ -82,8 +79,6 @@ jobs:
       - if: github.ref == 'refs/heads/dev'
         name: Use Development Docker Compose File
         run: |
-          docker context use remote
-          cd ${{ secrets.WORK_DIR }}
           cp docker-compose.dev.yml docker-compose.yml
         env:
           CI_JOB_NUMBER: 1
@@ -92,9 +87,11 @@ jobs:
         env:
           IMAGE_REF: ${{ steps.meta.outputs.tags }}
         run: |
-          docker context use remote
+          ssh ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
           cd ${{ secrets.WORK_DIR }}
-          docker compose -f docker-compose.yml up -d
+          docker compose down
+          docker compose pull
+          docker compose up -d
 
       - name: cleanup
         run: |
