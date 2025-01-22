@@ -67,11 +67,29 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GH_TOKEN }}
 
+      # Copy the correct Docker Compose file based on branch
+      - if: github.ref == 'refs/heads/main'
+        name: Use Production Docker Compose File
+        run: |
+          cp docker-compose.prod.yml docker-compose.yml
+        env:
+          CI_JOB_NUMBER: 1
+
+      - if: github.ref == 'refs/heads/dev'
+        name: Use Development Docker Compose File
+        run: |
+          cp docker-compose.dev.yml docker-compose.yml
+        env:
+          CI_JOB_NUMBER: 1
+
       - name: Docker compose
         env:
           IMAGE_REF: ${{ steps.meta.outputs.tags }}
         run: |
-          docker-compose --context remote -f docker-compose.yml up -d
+          docker compose --context remote -f docker-compose.yml up -d
 
       - name: cleanup
-        run: rm -rf ~/.ssh
+        run: |
+          rm -rf ~/.ssh
+          rm docker-compose.yml
+        
