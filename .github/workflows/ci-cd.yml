@@ -86,6 +86,7 @@ jobs:
         env:
           IMAGE_REF: ${{ steps.meta.outputs.tags }}
         run: |
+          docker context use remote
           docker compose -f docker-compose.yml up -d
 
       - name: cleanup
