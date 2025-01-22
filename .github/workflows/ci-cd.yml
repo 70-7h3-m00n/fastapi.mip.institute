@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  SSH_AUTH_SOCK: /tmp/ssh_agent.sock
 
 jobs:
   build-and-push:
