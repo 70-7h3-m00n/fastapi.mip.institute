@@ -9,6 +9,7 @@ on:
 env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
+  WORKDIR: /root/opt/mip
   REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
   REMOTE_USER: ${{ secrets.REMOTE_USER }}
 
@@ -17,23 +18,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v4
-      - name: Log in to the Container registry
-        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GH_TOKEN }}
 
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
       - name: Build and push Docker image
         run: |
-          docker build . --file Dockerfile --tag ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker build -t ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }} .
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
 
   deploy:
@@ -45,46 +42,23 @@ jobs:
           install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           ssh-keyscan -H "${{ secrets.REMOTE_HOST }}" > ~/.ssh/known_hosts
-#          docker context create remote --docker host=ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
-
-      - uses: actions/checkout@v3
-
-      - name: Extract metadata (tags, labels) for Docker
-        id: meta
-        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
-        with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3.0.0
+        uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GH_TOKEN }}
 
-      # Copy the correct Docker Compose file based on branch
-      - if: github.ref == 'refs/heads/main'
-        name: Use Production Docker Compose File
+      - name: Copy Docker Compose File to remote host
         run: |
-          cp docker-compose.prod.yml docker-compose.yml
-        env:
-          CI_JOB_NUMBER: 1
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            scp docker-compose.prod.yml ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            scp docker-compose.dev.yml ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
+          fi
 
-      - if: github.ref == 'refs/heads/dev'
-        name: Use Development Docker Compose File
+      - name: Deploy Application
         run: |
-          cp docker-compose.dev.yml docker-compose.yml
-        env:
-          CI_JOB_NUMBER: 1
-
-      - name: Docker compose
-        env:
-          IMAGE_REF: ${{ steps.meta.outputs.tags }}
-        run: |
-          docker compose down
-          docker compose pull
-          docker compose up -d
-
-      - name: cleanup
-        run: |
-          rm -rf ~/.ssh
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker-compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
