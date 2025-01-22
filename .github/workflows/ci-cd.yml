@@ -47,42 +47,31 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
+          install -m 600 -D /dev/null ~/.ssh/id_rsa
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H "${{ secrets.REMOTE_HOST }}" >> ~/.ssh/known_hosts
+          docker context create remote --docker host=ssh://${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}
 
       - uses: actions/checkout@v3
 
-      - name: Use correct Docker Compose file based on branch
-        if: github.ref == 'refs/heads/main'
-        run: |
-          cp docker-compose.prod.yml docker-compose.yml
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@9ec57ed1fcdbf14dcef7dfbe97b2010124a938b7
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3.0.0
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
+
+      - name: Docker compose
         env:
-          CI_JOB_NUMBER: 1
+          IMAGE_REF: ${{ steps.meta.outputs.tags }}
+        run: |
+          docker-compose --context remote -f docker-compose.yml up -d
 
-      - if: github.ref == 'refs/heads/main'
-        name: Deploy to SSH Server (Master)
-        uses: easingthemes/ssh-deploy@main
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: /opt/mip/fastapi.mip.institute
-          SOURCE: ./  # The source directory in your repository
-          ARGS: "-rlgoDzvc -i"  # Rsync arguments
-          EXCLUDE: "/node_modules/, /dist/"  # Optional: exclude certain directories
-
-      - if: github.ref == 'refs/heads/develop'
-        name: Deploy to SSH Server (Dev)
-        uses: easingthemes/ssh-deploy@main
-        with:
-          SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
-          REMOTE_USER: ${{ secrets.REMOTE_USER }}
-          TARGET: /opt/mip/fastapi.mip.institute
-          SOURCE: ./  # The source directory in your repository
-          ARGS: "-rlgoDzvc -i"  # Rsync arguments
-          EXCLUDE: "/node_modules/, /dist/"  # Optional: exclude certain directories
-
-      - name: Clean up Docker Compose file
-        run: rm docker-compose.yml
+      - name: cleanup
+        run: rm -rf ~/.ssh
