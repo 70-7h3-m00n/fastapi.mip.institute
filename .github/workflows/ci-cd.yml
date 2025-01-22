@@ -52,6 +52,7 @@ jobs:
 
       - name: Copy Docker Compose File to remote host
         run: |
+          ls
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
             scp docker-compose.prod.yml ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
           elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
