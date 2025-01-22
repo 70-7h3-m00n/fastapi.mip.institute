@@ -1,36 +1,24 @@
-import os
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from asyncio import sleep as asleep
-from app.logging_init import logger
+from typing import Any, Callable, Optional
+from uuid import UUID
 
-from dotenv import load_dotenv
-
-load_dotenv()
+from orjson import OPT_NON_STR_KEYS, dumps as orjson_dumps, loads as orjson_loads
 
 
-async def send_email_success(to_email, subject, body):
-    """Send an email using smtp protocol."""
-    await asleep(6)
-    try:
-        smtp_server = 'smtp.yandex.com'
-        smtp_port = 587
-        smtp_user = 'notify@mip.institute'
-        smtp_password = os.getenv("EMAIL_PASSWORD")
+def _default(value: Any) -> Any:
+    if isinstance(value, UUID):
+        return str(value)
+    raise TypeError(f"Can't dump {value}")
 
-        msg = MIMEMultipart()
-        msg['From'] = smtp_user
-        msg['To'] = to_email
-        msg['Subject'] = subject
 
-        msg.attach(MIMEText(body, 'plain'))
+def json_loads(value: Any) -> Any:
+    return orjson_loads(value)
 
-        with smtplib.SMTP(smtp_server, smtp_port) as server:
-            server.starttls()
-            server.login(smtp_user, smtp_password)
-            server.send_message(msg)
-        return True
-    except Exception as e:
-        logger.error(f"Failed to send email to address {to_email}: {e}")
-        return False
+
+def json_dumps(
+    value: Any, decode: bool = True, default: Optional[Callable[..., Any]] = None
+) -> Any:
+    if default is None:
+        default = _default
+    if not decode:
+        return orjson_dumps(value, default=default, option=OPT_NON_STR_KEYS)
+    return orjson_dumps(value, default=default, option=OPT_NON_STR_KEYS).decode()

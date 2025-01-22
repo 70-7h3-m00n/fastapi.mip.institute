@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+set -e
+set -x
+
+black ./app
+isort ./app
+
+flake8 ./app
