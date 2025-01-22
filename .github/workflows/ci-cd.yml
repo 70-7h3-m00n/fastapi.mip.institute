@@ -52,14 +52,16 @@ jobs:
 
       - name: Copy Docker Compose File to remote host
         run: |
-          ls
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
-            scp docker-compose.prod.yml ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
+            COMPOSE_FILE="docker-compose.prod.yml"
           elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
-            scp docker-compose.dev.yml ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
+            COMPOSE_FILE="docker-compose.dev.yml"
           fi
+          
+          scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}
+
 
       - name: Deploy Application
         run: |
           ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker-compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
