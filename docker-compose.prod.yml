@@ -29,7 +29,7 @@ services:
     depends_on:
       - postgres
     ports:
-      - "80:8000"
+      - "80:80"
 
   app_migrator:
     <<: *app_environment

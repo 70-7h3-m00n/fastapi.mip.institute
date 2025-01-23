@@ -125,9 +125,3 @@ async def payment_notification(  # noqa: C901
         )
 
     return Response(content={"code": 0}, status_code=HTTPStatus.OK)
-
-
-@router.get("/", status_code=HTTPStatus.OK)
-async def get_transactions(db: AsyncSession = Depends(get_db)) -> Response:
-    transactions = await db.execute(select(Transaction))
-    return Response(content=transactions.scalars().all(), status_code=HTTPStatus.OK)
