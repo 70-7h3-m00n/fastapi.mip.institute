@@ -65,6 +65,7 @@ jobs:
           fi
           
           scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
+          scp scripts/create_database.sql ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/init-scripts/
 
 
       - name: Deploy Application
