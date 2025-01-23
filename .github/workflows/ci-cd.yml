@@ -64,10 +64,10 @@ jobs:
             COMPOSE_FILE="docker-compose.dev.yml"
           fi
           
-          scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
+          scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}
 
 
       - name: Deploy Application
         run: |
           ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}"
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker compose -f ${{ env.WORK_DIR }}/$COMPOSE_FILE up -d"
