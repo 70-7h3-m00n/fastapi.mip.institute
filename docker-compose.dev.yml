@@ -23,8 +23,7 @@ services:
 
   backend:
     <<: *app_environment
-    build: .
-    image: backend:latest
+    image: bratgans/fastapi.mip.backend:dev
     restart: always
     depends_on:
       - postgres
@@ -35,7 +34,7 @@ services:
 
   app_migrator:
     <<: *app_environment
-    image: backend:latest
+    image: bratgans/fastapi.mip.backend:dev
     restart: "no"
     command:  >
       bash -c "
