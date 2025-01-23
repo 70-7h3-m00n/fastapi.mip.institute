@@ -1,5 +1,7 @@
 version: "3.11"
 
+name: mip.backend.dev
+
 x-app-environment: &app_environment
   environment:
     - DB_ECHO=${DB_ECHO}
