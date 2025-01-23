@@ -69,5 +69,8 @@ jobs:
 
       - name: Deploy Application
         run: |
+          echo "Pulling image"
           ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}"
+          echo "Starting containers"
           ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
+          echo "Application deployed"
