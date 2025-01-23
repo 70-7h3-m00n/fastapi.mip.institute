@@ -83,5 +83,5 @@ jobs:
           echo "Pulling image"
           ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}"
           echo "Starting containers"
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker compose -f docker-compose.yml up -d"
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker compose -f docker-compose.yml down && docker compose -f docker-compose.yml up -d"
           echo "Application deployed"
