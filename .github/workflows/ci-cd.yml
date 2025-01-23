@@ -7,7 +7,7 @@ on:
       - dev
 
 env:
-  WORKDIR: /root/opt/mip
+  WORK_DIR: ${{ secrets.WORKDIR }}
   REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
   REMOTE_USER: ${{ secrets.REMOTE_USER }}
 
@@ -64,7 +64,7 @@ jobs:
             COMPOSE_FILE="docker-compose.dev.yml"
           fi
           
-          scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}
+          scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
 
 
       - name: Deploy Application
