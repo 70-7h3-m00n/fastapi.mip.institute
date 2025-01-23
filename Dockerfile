@@ -31,4 +31,4 @@ COPY . .
 EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["uvicorn", "main:app", "--port=8000", "--host=0.0.0.0"]
+CMD ["uvicorn", "app.app.main:app", "--port=8000", "--host=0.0.0.0"]
