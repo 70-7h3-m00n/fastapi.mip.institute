@@ -79,5 +79,5 @@ jobs:
           export POSTGRES_HOST=${{ vars.POSTGRES_HOST }}
           export POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
           export DB_ECHO=${{ vars.DB_ECHO }}
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
+          DOCKER_HOST=ssh://${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} docker compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
           echo "Application deployed"
