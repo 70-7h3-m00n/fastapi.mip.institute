@@ -67,17 +67,21 @@ jobs:
           scp $COMPOSE_FILE ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/docker-compose.yml
           scp scripts/create_database.sql ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }}:${{ env.WORK_DIR }}/init-scripts/
 
+      - name: Copy .env file to remote host
+        run: |
+          echo "POSTGRES_USER=${{ vars.POSTGRES_USER }}" > .env
+          echo "POSTGRES_PASSWORD=${{ vars.POSTGRES_PASSWORD }}" >> .env
+          echo "POSTGRES_DB=${{ vars.POSTGRES_DB }}" >> .env
+          echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
+          echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
+          echo "DB_ECHO=${{ vars.DB_ECHO }}" >> .env
+          
+          scp .env ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.WORK_DIR }}/
 
       - name: Deploy Application
         run: |
           echo "Pulling image"
-          DOCKER_HOST=ssh://${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}"
           echo "Starting containers"
-          export POSTGRES_USER=${{ vars.POSTGRES_USER }}
-          export POSTGRES_PASSWORD=${{ vars.POSTGRES_PASSWORD }}
-          export POSTGRES_DB=${{ vars.POSTGRES_DB }}
-          export POSTGRES_HOST=${{ vars.POSTGRES_HOST }}
-          export POSTGRES_PORT=${{ vars.POSTGRES_PORT }}
-          export DB_ECHO=${{ vars.DB_ECHO }}
-          DOCKER_HOST=ssh://${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} docker compose -f ${{ secrets.WORK_DIR }}/docker-compose.yml up -d
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker compose -f docker-compose.yml up -d"
           echo "Application deployed"
