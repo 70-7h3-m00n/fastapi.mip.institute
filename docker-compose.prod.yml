@@ -1,6 +1,6 @@
 version: "3.11"
 
-name: mip.backend.prod
+#name: mip.backend.prod
 
 x-app-environment: &app_environment
   environment:
@@ -17,7 +17,7 @@ services:
     image: postgres:16
     restart: always
     ports:
-      - "5432:5432"
+      - "15432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d

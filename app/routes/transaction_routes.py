@@ -79,31 +79,19 @@ async def payment_notification(  # noqa: C901
         db=db, model=User, email=email, first_name=first_name, last_name=last_name
     )
 
-    transaction_select = await db.execute(
-        select(Transaction).filter_by(transaction_id=transaction_id)
+    transaction, created = await get_one_or_create(
+        db=db,
+        model=Transaction,
+        transaction_id=transaction_id,
+        user_id=user.id,
+        status=status,
+        amount=amount,
     )
-    transaction = transaction_select.scalar()
 
-    if transaction:
+    if transaction and not created:
         if transaction.email_sent:
             logger.info(f"Transaction {transaction_id} already processed")
             return Response(content={"code": 0}, status_code=HTTPStatus.OK)
-    else:
-        try:
-            await get_one_or_create(
-                db=db,
-                model=Transaction,
-                transaction_id=transaction_id,
-                user_id=user.id,
-                status=status,
-                amount=amount,
-            )
-        except Exception as e:
-            logger.error(f"Failed to add transaction {transaction_id}: {e}")
-            raise HTTPException(
-                status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
-                detail="Failed to process transaction",
-            )
 
     try:
         current_time = int(datetime.datetime.now().timestamp())

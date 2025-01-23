@@ -22,18 +22,17 @@ async def get_one_or_create(
     obj = result.scalars().first()
     if obj:
         return obj, False
-    else:
-        kwargs.update(create_method_kwargs or {})
-        created = getattr(model, create_method, model)(**kwargs)
-        try:
-            db.add(created)
-            await db.flush()
-            await db.refresh(created)
-            return created, True
-        except IntegrityError:
-            await db.rollback()
-            result = await db.execute(select(model).filter_by(**kwargs))
-            return result.scalars().first(), False
+    kwargs.update(create_method_kwargs or {})
+    created = getattr(model, create_method, model)(**kwargs)
+    try:
+        db.add(created)
+        await db.flush()
+        await db.refresh(created)
+        return created, True
+    except IntegrityError:
+        await db.rollback()
+        result = await db.execute(select(model).filter_by(**kwargs))
+        return result.scalars().first(), False
 
 
 async def set_transaction_status(
