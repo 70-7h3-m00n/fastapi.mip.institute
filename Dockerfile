@@ -23,10 +23,10 @@ COPY ./scripts/start /start
 RUN sed -i 's/\r$//g' /start && \
     chmod +x /start
 
-ENV PYTHONPATH /code
-WORKDIR /code
+ENV PYTHONPATH /app
+WORKDIR /app
 
-COPY ./app /code/app
+COPY . .
 
 EXPOSE 8000
 

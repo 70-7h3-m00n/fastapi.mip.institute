@@ -30,8 +30,6 @@ services:
       - postgres
     ports:
       - "8000:8000"
-    volumes:
-      - .:/app
 
   app_migrator:
     <<: *app_environment
@@ -43,8 +41,6 @@ services:
         alembic upgrade head &&
         echo 'Migration completed'
       "
-    volumes:
-      - .:/app
     depends_on:
       - postgres
       - backend
