@@ -7,7 +7,6 @@ on:
       - dev
 
 env:
-  IMAGE_NAME: ${{ github.repository }}
   WORKDIR: /root/opt/mip
   REMOTE_HOST: ${{ secrets.REMOTE_HOST }}
   REMOTE_USER: ${{ secrets.REMOTE_USER }}
@@ -30,7 +29,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v4
         with:
-          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          images: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v4
@@ -70,5 +69,5 @@ jobs:
 
       - name: Deploy Application
         run: |
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}"
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}"
           ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "docker compose -f ${{ env.WORK_DIR }}/docker-compose.yml up -d"
