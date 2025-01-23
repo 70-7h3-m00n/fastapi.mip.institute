@@ -23,12 +23,12 @@ COPY ./scripts/start /start
 RUN sed -i 's/\r$//g' /start && \
     chmod +x /start
 
-ENV PYTHONPATH /app
-WORKDIR /app
+ENV PYTHONPATH /code
+WORKDIR /code
 
-COPY . .
+COPY ./app /code/app
 
 EXPOSE 8000
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["uvicorn", "app.app.main:app", "--port=8000", "--host=0.0.0.0"]
+CMD ["uvicorn", "app.main:app", "--port=8000", "--host=0.0.0.0"]
