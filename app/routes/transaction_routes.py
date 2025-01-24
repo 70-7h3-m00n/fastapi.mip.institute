@@ -4,15 +4,7 @@ import uuid
 from http import HTTPStatus
 from urllib.parse import unquote
 
-from fastapi import (
-    APIRouter,
-    BackgroundTasks,
-    Depends,
-    HTTPException,
-    Request,
-    Response,
-)
-from sqlalchemy import select
+from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
@@ -32,7 +24,7 @@ async def payment_notification(  # noqa: C901
     request: Request,
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
-) -> Response:
+) -> dict[str, int]:
     form_data = await request.form()
     parsed_data = {key: unquote(value) for key, value in form_data.items()}
 
@@ -63,19 +55,11 @@ async def payment_notification(  # noqa: C901
             f"Payment amount mismatch for transaction {transaction_id}: Amount: "
             f"{amount}, PaymentAmount: {float(parsed_data.get('PaymentAmount', 0))} "
         )
-        raise HTTPException(
-            status_code=HTTPStatus.BAD_REQUEST, detail="Payment amount mismatch"
-        )
+        return {"code": 12}
 
-    try:
-        first_name, last_name = parsed_data.get("Name").split(" ")
-    except Exception as e:
-        logger.warning(f"Could not split 'Name': {e}")
-        first_name = last_name = (
-            parsed_data.get("Name") if parsed_data.get("Name") else None
-        )
+    first_name, last_name = None, None
 
-    user = await get_one_or_create(
+    user, _ = await get_one_or_create(
         db=db, model=User, email=email, first_name=first_name, last_name=last_name
     )
 
@@ -87,11 +71,12 @@ async def payment_notification(  # noqa: C901
         status=status,
         amount=amount,
     )
+    await db.commit()
 
     if transaction and not created:
         if transaction.email_sent:
             logger.info(f"Transaction {transaction_id} already processed")
-            return Response(content={"code": 0}, status_code=HTTPStatus.OK)
+            return {"code": 0}
 
     try:
         current_time = int(datetime.datetime.now().timestamp())
@@ -124,4 +109,4 @@ async def payment_notification(  # noqa: C901
             detail="Failed to manage background task",
         )
 
-    return Response(content={"code": 0}, status_code=HTTPStatus.OK)
+    return {"code": 0}

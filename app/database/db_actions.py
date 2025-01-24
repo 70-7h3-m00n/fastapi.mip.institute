@@ -49,22 +49,6 @@ async def set_transaction_status(
         logger.error(f"Transaction {transaction_id} was not found")
 
 
-# async def add_transaction(
-#   db: AsyncSession, transaction_id: str, status: str, amount: float
-# ) -> None:
-#     try:
-#         transaction = Transaction(
-#             transaction_id=transaction_id,
-#             status=status,
-#             amount=amount,
-#         )
-#         db.add(transaction)
-#         await db.commit()
-#     except IntegrityError as e:
-#         logger.error(f"Transaction {transaction_id} already exists: {e}")
-#         await db.rollback()
-
-
 async def mark_email_sent(db: AsyncSession, transaction_id: str) -> None:
     transaction_select = await db.execute(
         select(Transaction).filter_by(transaction_id=transaction_id)
