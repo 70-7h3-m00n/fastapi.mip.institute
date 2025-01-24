@@ -56,6 +56,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
+      - name: Determine image tag based on branch
+        id: set-tag
+        run: |
+          if [ "${{ github.ref }}" = "refs/heads/main" ]; then
+            echo "TAG=main" >> $GITHUB_ENV
+          elif [ "${{ github.ref }}" = "refs/heads/dev" ]; then
+            echo "TAG=dev" >> $GITHUB_ENV
+          else
+            echo "TAG=latest" >> $GITHUB_ENV
+          fi
+
       - name: Copy Docker Compose File to remote host
         run: |
           if [ "${{ github.ref }}" = "refs/heads/main" ]; then
@@ -81,7 +92,11 @@ jobs:
       - name: Deploy Application
         run: |
           echo "Pulling image"
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}"
-          echo "Starting containers"
-          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "cd ${{ env.WORK_DIR }} && docker compose -f docker-compose.yml down && docker compose -f docker-compose.yml up -d"
-          echo "Application deployed"
+          ssh ${{ env.REMOTE_USER }}@${{ env.REMOTE_HOST }} "
+            cd ${{ secrets.WORK_DIR }} &&
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPO }}:${{ env.TAG }} &&
+            echo 'Stopping existing containers' && 
+            docker compose -f docker-compose.yml down && 
+            echo 'Starting containers' && 
+            docker compose -f docker-compose.yml up -d
+          "
