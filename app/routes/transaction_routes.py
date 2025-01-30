@@ -5,15 +5,14 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import config
 from app.database.db_actions import get_one_or_create
 from app.database.db_init import get_db
 from app.logging_init import get_logger
 from app.models.db_models import Transaction, User
 from app.models.enums import TransactionStatusEnum
-from app.services.transaction_services import confirm_payment
 from app.services.auth_services import verify_credentials
-from services.email_services import prepare_message
+from app.services.email_services import prepare_message
+from app.services.transaction_services import confirm_payment
 
 logger = get_logger()
 router = APIRouter()
