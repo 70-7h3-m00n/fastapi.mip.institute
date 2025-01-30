@@ -1,10 +1,10 @@
+import asyncio
 from base64 import b64encode
 from http import HTTPStatus
-from json import JSONDecodeError
-from typing import Any
-
 from httpx import AsyncClient
+from json import JSONDecodeError
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import Any
 
 from app.config import config
 from app.database.db_actions import mark_email_sent, set_transaction_status
@@ -46,6 +46,7 @@ async def confirm_payment(
     body: str,
     db: AsyncSession,
 ):
+    await asyncio.sleep(10)
     received_transaction = await get_transaction_status(transaction_id)
     if not received_transaction.get("Success"):
         logger.error(
