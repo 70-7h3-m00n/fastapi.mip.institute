@@ -16,6 +16,9 @@ logger = get_logger()
 
 
 async def get_transaction_status(transaction_id: str) -> dict[str, Any]:
+    public_id = config.cloudpayments.public_id
+    api_secret = config.cloudpayments.api_secret
+    logger.info(f"Using Public ID: {public_id} and API Secret: {api_secret}")
     auth_header = b64encode(
         f"{config.cloudpayments.public_id}:{config.cloudpayments.api_secret}".encode()
     ).decode()
