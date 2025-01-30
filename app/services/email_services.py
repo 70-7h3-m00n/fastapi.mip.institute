@@ -1,4 +1,4 @@
-import os
+import asyncio
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -9,7 +9,7 @@ from app.config import config
 logger = get_logger()
 
 
-async def send_email_success(to_email: str, subject: str, body: str) -> bool:
+def send_email_sync(to_email: str, subject: str, body: str) -> bool:
     try:
         smtp_server = "smtp.yandex.ru"
         smtp_port = 587
@@ -31,3 +31,7 @@ async def send_email_success(to_email: str, subject: str, body: str) -> bool:
     except Exception as e:
         logger.error(f"Failed to send email to address {to_email}: {e}")
         return False
+
+
+async def send_email_success(to_email: str, subject: str, body: str) -> bool:
+    return await asyncio.to_thread(send_email_sync, to_email, subject, body)
