@@ -1,5 +1,4 @@
 from fastapi import FastAPI
-from fastapi.security import HTTPBasic
 from starlette.middleware.cors import CORSMiddleware
 
 from app.config import config
@@ -11,8 +10,6 @@ app = FastAPI(
     description=config.application.description,
     docs_url=config.application.docs_url,
 )
-
-security = HTTPBasic()
 
 app.add_middleware(
     CORSMiddleware,
