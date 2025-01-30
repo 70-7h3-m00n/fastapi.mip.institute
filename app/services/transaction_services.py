@@ -1,5 +1,6 @@
 from base64 import b64encode
 from http import HTTPStatus
+from json import JSONDecodeError
 from typing import Any
 
 from httpx import AsyncClient
@@ -29,8 +30,12 @@ async def get_transaction_status(transaction_id: str) -> dict[str, Any]:
         response = await client.post(url, json=data, headers=headers)
         if response.status_code == HTTPStatus.OK:
             return response.json()
-        logger.error(f"Failed to fetch transaction status: {response.json()}")
-        raise ValueError(f"Failed to fetch transaction status: {response.json()}")
+        try:
+            error_details = response.json()  # Attempt to parse the response JSON
+        except JSONDecodeError:
+            error_details = response.text  # Fallback to raw text if JSON parsing fails
+
+        raise ValueError(f"Failed to fetch transaction status: {error_details}")
 
 
 async def confirm_payment(

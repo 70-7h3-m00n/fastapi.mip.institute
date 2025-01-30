@@ -5,6 +5,7 @@ from http import HTTPStatus
 from urllib.parse import unquote
 
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
+from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.config import config
@@ -14,6 +15,7 @@ from app.logging_init import get_logger
 from app.models.db_models import Transaction, User
 from app.models.enums import TransactionStatusEnum
 from app.services.transaction_services import confirm_payment
+from app.services.auth_services import verify_credentials
 
 logger = get_logger()
 router = APIRouter()
@@ -24,6 +26,7 @@ async def payment_notification(  # noqa: C901
     request: Request,
     background_tasks: BackgroundTasks,
     db: AsyncSession = Depends(get_db),
+    credentials: HTTPBasicCredentials = Depends(verify_credentials),
 ) -> dict[str, int]:
     form_data = await request.form()
     parsed_data = {key: unquote(value) for key, value in form_data.items()}
