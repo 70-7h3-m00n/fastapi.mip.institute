@@ -15,6 +15,9 @@ class Application(BaseSettings):
     docs_url: str = Field(default="/api/docs", description="Docs url")
     auth_username: str = Field(default="mip.admin", description="Auth username", alias="AUTH_USERNAME")
     auth_password: str = Field(default="faksdfjw329f8d7u4%^*y4o2j4", description="Auth password", alias="AUTH_PASSWORD")
+    smtp_server_password: str = Field(
+        default="password", description="SMTP server password", alias="SMTP_SERVER_PASSWORD"
+    )
 
 
 class CloudPayments(BaseSettings):

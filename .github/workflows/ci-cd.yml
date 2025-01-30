@@ -88,6 +88,7 @@ jobs:
           echo "DB_ECHO=${{ vars.DB_ECHO }}" >> .env
           echo "CLOUDPAYMENTS_PUBLIC_ID=${{ vars.CLOUDPAYMENTS_PUBLIC_ID }}" >> .env
           echo "CLOUDPAYMENTS_API_SECRET=${{ vars.CLOUDPAYMENTS_API_SECRET }}" >> .env
+          echo "SMTP_SERVER_PASSWORD=${{ vars.SMTP_SERVER_PASSWORD }}" >> .env
           
           scp .env ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.WORK_DIR }}/
 

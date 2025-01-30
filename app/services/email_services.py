@@ -4,16 +4,17 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 from app.logging_init import get_logger
+from app.config import config
 
 logger = get_logger()
 
 
 async def send_email_success(to_email: str, subject: str, body: str) -> bool:
     try:
-        smtp_server = "smtp.yandex.com"
+        smtp_server = "smtp.yandex.ru"
         smtp_port = 587
         smtp_user = "notify@mip.institute"
-        smtp_password = os.getenv("EMAIL_PASSWORD")
+        smtp_password = config.application.smtp_server_password
 
         msg = MIMEMultipart()
         msg["From"] = smtp_user
