@@ -86,6 +86,8 @@ jobs:
           echo "POSTGRES_HOST=${{ vars.POSTGRES_HOST }}" >> .env
           echo "POSTGRES_PORT=${{ vars.POSTGRES_PORT }}" >> .env
           echo "DB_ECHO=${{ vars.DB_ECHO }}" >> .env
+          echo "CLOUDPAYMENTS_PUBLIC_ID=${{ vars.CLOUDPAYMENTS_PUBLIC_ID }}" >> .env
+          echo "CLOUDPAYMENTS_API_SECRET=${{ vars.CLOUDPAYMENTS_API_SECRET }}" >> .env
           
           scp .env ${{ secrets.REMOTE_USER }}@${{ secrets.REMOTE_HOST }}:${{ secrets.WORK_DIR }}/
 
