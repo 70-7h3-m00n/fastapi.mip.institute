@@ -19,8 +19,9 @@ services:
     <<: *app_environment
     image: postgres:16
     restart: always
-    hostname:
-      10.20.16.2
+    networks:
+      dev_backend_network:
+        ipv4_address: 10.20.16.2
     ports:
       - "5432:5432"
     volumes:
@@ -33,10 +34,11 @@ services:
     restart: always
     depends_on:
       - postgres
-    hostname:
-      10.20.16.1
+    networks:
+      dev_backend_network:
+        ipv4_address: 10.20.16.1
     ports:
-      - "80:80"
+      - "8001:8001"
 
   app_migrator:
     <<: *app_environment
@@ -52,6 +54,12 @@ services:
       - postgres
       - backend
 
+networks:
+  dev_backend_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.20.16.1/10
 
 volumes:
   db_data:
