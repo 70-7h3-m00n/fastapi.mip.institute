@@ -19,10 +19,6 @@ COPY ./scripts/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint && \
     chmod +x /entrypoint
 
-COPY ./scripts/start /start
-RUN sed -i 's/\r$//g' /start && \
-    chmod +x /start
-
 ENV PYTHONPATH /app
 WORKDIR /app
 
