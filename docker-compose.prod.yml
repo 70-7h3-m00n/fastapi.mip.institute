@@ -20,7 +20,7 @@ services:
     image: postgres:16
     restart: always
     networks:
-      prod_backend_network:
+      institute_network:
         ipv4_address: 10.10.16.2
     ports:
       - "5432:5432"
@@ -35,7 +35,7 @@ services:
     depends_on:
       - postgres
     networks:
-      prod_backend_network:
+      institute_network:
         ipv4_address: 10.10.16.1
     ports:
       - "8001:8001"
@@ -55,7 +55,7 @@ services:
       - backend
 
 networks:
-  prod_backend_network:
+  institute_network:
     driver: bridge
     ipam:
       config:
