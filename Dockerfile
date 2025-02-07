@@ -24,7 +24,7 @@ WORKDIR /app
 
 COPY . .
 
-EXPOSE 8001
+EXPOSE 80
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["uvicorn", "app.main:app", "--port=8001", "--host=0.0.0.0"]
+CMD ["uvicorn", "app.main:app", "--port=80", "--host=0.0.0.0"]

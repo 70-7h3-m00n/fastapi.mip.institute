@@ -31,8 +31,6 @@ services:
     restart: always
     depends_on:
       - postgres
-    ports:
-      - "80:80"
 
   app_migrator:
     <<: *app_environment
