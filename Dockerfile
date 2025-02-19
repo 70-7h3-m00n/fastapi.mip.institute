@@ -5,7 +5,8 @@ ENV CURL_CA_BUNDLE="" \
     PYTHONFAULTHANDLER=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONHASHSEED=random \
-    POETRY_VIRTUALENVS_CREATE=false
+    POETRY_VIRTUALENVS_CREATE=false \
+    APP_PORT=8001
 
 RUN pip --quiet --no-cache-dir install --upgrade pip poetry==1.2.2 poetry-core==1.3.2
 
@@ -24,7 +25,5 @@ WORKDIR /app
 
 COPY . .
 
-EXPOSE 8001
-
 ENTRYPOINT ["/entrypoint"]
-CMD ["uvicorn", "app.main:app", "--port=8001", "--host=0.0.0.0"]
+CMD ["sh", "-c", "uvicorn app.main:app --port=$APP_PORT --host=0.0.0.0"]

@@ -13,6 +13,7 @@ x-app-environment: &app_environment
     - CLOUDPAYMENTS_PUBLIC_ID=${CLOUDPAYMENTS_PUBLIC_ID}
     - CLOUDPAYMENTS_API_SECRET=${CLOUDPAYMENTS_API_SECRET}
     - SMTP_SERVER_PASSWORD=${SMTP_SERVER_PASSWORD}
+    - APP_PORT=8081
 
 services:
   prod-db-fastapi-mip-institute:
@@ -36,7 +37,7 @@ services:
     container_name: prod-fastapi-mip-institute
     restart: always
     ports:
-      - "8001:8001"
+      - "8081:8081"
     depends_on:
       - postgres
     networks:
