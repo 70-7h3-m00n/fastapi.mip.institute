@@ -56,6 +56,9 @@ services:
     depends_on:
       - dev-db-fastapi-mip-institute
       - dev-fastapi-mip-institute
+    networks:
+      proxynet_dev:
+        ipv4_address: 10.20.16.3
 
 networks:
   proxynet_dev:
