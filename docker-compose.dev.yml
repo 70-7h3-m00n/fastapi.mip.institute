@@ -13,6 +13,7 @@ x-app-environment: &app_environment
     - CLOUDPAYMENTS_PUBLIC_ID=${CLOUDPAYMENTS_PUBLIC_ID}
     - CLOUDPAYMENTS_API_SECRET=${CLOUDPAYMENTS_API_SECRET}
     - SMTP_SERVER_PASSWORD=${SMTP_SERVER_PASSWORD}
+    - APP_PORT=8001
 
 services:
   dev-db-fastapi-mip-institute:
