@@ -19,16 +19,12 @@ COPY ./scripts/entrypoint /entrypoint
 RUN sed -i 's/\r$//g' /entrypoint && \
     chmod +x /entrypoint
 
-COPY ./scripts/start /start
-RUN sed -i 's/\r$//g' /start && \
-    chmod +x /start
-
 ENV PYTHONPATH /app
 WORKDIR /app
 
 COPY . .
 
-EXPOSE 80
+EXPOSE 8001
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["uvicorn", "app.main:app", "--port=80", "--host=0.0.0.0"]
+CMD ["uvicorn", "app.main:app", "--port=8001", "--host=0.0.0.0"]

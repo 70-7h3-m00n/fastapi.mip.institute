@@ -1,6 +1,3 @@
-import datetime
-import hashlib
-import uuid
 from http import HTTPStatus
 from urllib.parse import unquote
 
@@ -8,14 +5,14 @@ from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException, Request
 from fastapi.security import HTTPBasicCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.config import config
 from app.database.db_actions import get_one_or_create
 from app.database.db_init import get_db
 from app.logging_init import get_logger
 from app.models.db_models import Transaction, User
 from app.models.enums import TransactionStatusEnum
-from app.services.transaction_services import confirm_payment
 from app.services.auth_services import verify_credentials
+from app.services.email_services import prepare_message
+from app.services.transaction_services import confirm_payment
 
 logger = get_logger()
 router = APIRouter()
@@ -82,26 +79,15 @@ async def payment_notification(  # noqa: C901
             return {"code": 0}
 
     try:
-        current_time = int(datetime.datetime.now().timestamp())
-        password_uuid = str(uuid.uuid4())[:10]
-        k_base_string = f"3ykOQzkL2X647dWw8dDx7h5c{email}{current_time}"
-        k_hash = hashlib.md5(k_base_string.encode()).hexdigest()
-
-        generated_link = (
-            f"{config.frontend.users_login_url}?un={email}"
-            f"&pw={password_uuid}&ln={last_name}"
-            f"&fn={first_name}&mn="
-            f"&g=&e={email}&t={current_time}"
-            f"&k={k_hash}"
-        )
+        subject, body = await prepare_message(email=email, first_name=first_name, last_name=last_name)
 
         background_tasks.add_task(
             confirm_payment,
             transaction_id,
             amount,
             email,
-            "Your payment",
-            f"Here is your link: {generated_link}",
+            subject,
+            body,
             db,
         )
 

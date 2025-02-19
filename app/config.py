@@ -15,9 +15,6 @@ class Application(BaseSettings):
     docs_url: str = Field(default="/api/docs", description="Docs url")
     auth_username: str = Field(default="mip.admin", description="Auth username", alias="AUTH_USERNAME")
     auth_password: str = Field(default="faksdfjw329f8d7u4%^*y4o2j4", description="Auth password", alias="AUTH_PASSWORD")
-    smtp_server_password: str = Field(
-        default="password", description="SMTP server password", alias="SMTP_SERVER_PASSWORD"
-    )
 
 
 class CloudPayments(BaseSettings):
@@ -112,12 +109,22 @@ class Postgres(BaseSettings):
         return f"postgresql+asyncpg://{self.user}:{self.password}@{self.host}:{self.port}/{self.db}"  # noqa: E501
 
 
+class SMTP(BaseSettings):
+    server: str = Field(default="smtp.yandex.ru", description="SMTP server", alias="SMTP_SERVER")
+    port: int = Field(default=587, description="SMTP port", alias="SMTP_PORT")
+    user: str = Field(default="notify@mip.institute", description="SMTP user", alias="SMTP_USER")
+    password: str = Field(
+        default="password", description="SMTP server password", alias="SMTP_SERVER_PASSWORD"
+    )
+
+
 class Settings(BaseSettings):
     application: Application = Application()
     cloudpayments: CloudPayments = CloudPayments()
     frontend: Frontend = Frontend()
     logging: Logging = Logging()
     postgres: Postgres = Postgres()
+    smtp: SMTP = SMTP()
 
 
 config = Settings()

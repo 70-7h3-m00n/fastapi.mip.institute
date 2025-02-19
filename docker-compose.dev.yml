@@ -15,24 +15,33 @@ x-app-environment: &app_environment
     - SMTP_SERVER_PASSWORD=${SMTP_SERVER_PASSWORD}
 
 services:
-  postgres:
+  dev-db-fastapi-mip-institute:
     <<: *app_environment
     image: postgres:16
+    container_name: dev-db-fastapi-mip-institute
     restart: always
+    networks:
+      proxynet_dev:
+        ipv4_address: 10.20.16.2
     ports:
       - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - /var/docker/websites/fastapi-mip-institute/dev-fastapi-mip-institute/dev-db-fastapi-mip-institute/volumes/data:/var/lib/postgresql/data/
+      - /var/docker/websites/fastapi-mip-institute/dev-fastapi-mip-institute/dev-db-fastapi-mip-institute/volumes/dump:/var/dump
       - ./init-scripts:/docker-entrypoint-initdb.d
 
-  backend:
+  dev-fastapi-mip-institute:
     <<: *app_environment
     image: bratgans/fastapi.mip.backend:dev
+    container_name: dev-fastapi-mip-institute
     restart: always
+    ports:
+      - "8001:8001"
     depends_on:
       - postgres
-    ports:
-      - "80:80"
+    networks:
+      proxynet_dev:
+        ipv4_address: 10.20.16.1
 
   app_migrator:
     <<: *app_environment
@@ -45,9 +54,16 @@ services:
         echo 'Migration completed'
       "
     depends_on:
-      - postgres
-      - backend
+      - dev-db-fastapi-mip-institute
+      - dev-fastapi-mip-institute
+    networks:
+      proxynet_dev:
+        ipv4_address: 10.20.16.3
 
-
-volumes:
-  db_data:
+networks:
+  proxynet_dev:
+    name: institute_network_dev
+    driver: bridge
+    ipam:
+     config:
+       - subnet: 10.20.0.0/16

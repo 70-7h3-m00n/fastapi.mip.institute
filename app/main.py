@@ -20,7 +20,3 @@ app.add_middleware(
 )
 
 app.include_router(api_router, prefix=config.application.api_prefix)
-
-
-# uvicorn main:app --reload --port 8001
-# ngrok http http://localhost:8001
