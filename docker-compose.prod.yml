@@ -25,7 +25,7 @@ services:
       proxynet:
         ipv4_address: 10.10.16.2
     ports:
-      - "5432:5432"
+      - "5433:5433"
     volumes:
       - /var/docker/websites/fastapi-mip-institute/prod-fastapi-mip-institute/prod-db-fastapi-mip-institute/volumes/data:/var/lib/postgresql/data/
       - /var/docker/websites/fastapi-mip-institute/prod-fastapi-mip-institute/prod-db-fastapi-mip-institute/volumes/dump:/var/dump
