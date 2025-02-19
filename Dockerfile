@@ -5,7 +5,7 @@ ENV CURL_CA_BUNDLE="" \
     PYTHONFAULTHANDLER=1 \
     PYTHONDONTWRITEBYTECODE=1 \
     PYTHONHASHSEED=random \
-    POETRY_VIRTUALENVS_CREATE=false
+    POETRY_VIRTUALENVS_CREATE=false \
     APP_PORT=8001
 
 RUN pip --quiet --no-cache-dir install --upgrade pip poetry==1.2.2 poetry-core==1.3.2
