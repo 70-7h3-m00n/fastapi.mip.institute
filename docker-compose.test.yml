@@ -18,10 +18,14 @@ services:
     image: postgres:16
     restart: always
     ports:
-      - "5432:5432"
+      - "5433:5432"
+    expose:
+      - "5433"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
+    command:
+      - -p 5433
 
   backend:
     <<: *app_environment
