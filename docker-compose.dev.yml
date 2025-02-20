@@ -21,15 +21,15 @@ services:
     image: postgres:16
     container_name: dev-db-fastapi-mip-institute
     restart: always
-    networks:
-      proxynet_dev:
-        ipv4_address: 10.20.16.2
     ports:
       - "5432:5432"
     volumes:
       - /var/docker/websites/fastapi-mip-institute/dev-fastapi-mip-institute/dev-db-fastapi-mip-institute/volumes/data:/var/lib/postgresql/data/
       - /var/docker/websites/fastapi-mip-institute/dev-fastapi-mip-institute/dev-db-fastapi-mip-institute/volumes/dump:/var/dump
       - ./init-scripts:/docker-entrypoint-initdb.d
+    networks:
+      proxynet_dev:
+        ipv4_address: 10.20.16.2
 
   dev-fastapi-mip-institute:
     <<: *app_environment
