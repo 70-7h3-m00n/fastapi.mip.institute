@@ -72,24 +72,28 @@ async def confirm_payment(
         data = {
             "TransactionId": transaction_id,
             "Amount": amount,
-            "CustomerReceipt": {
-                "Items": [
-                    {
-                        "label": "Образовательная услуга",  # наименование товара
-                        "price": amount,  # цена
-                        "quantity": 1.00,  # количество
-                        "amount": amount,  # сумма
-                        "vat": 0,  # ставка НДС
-                        "method": 1,  # тег-1214 признак способа расчета
-                        "object": 4,  # тег-1212 признак предмета товара, работы, услуги
-                        "measurementUnit": "шт",  # единица измерения
-                    },
-                ],
-                "calculationPlace": "mip.institute",  # место осуществления расчёта
-                "taxationSystem": 0,  # система налогообложения; необязательный, если у вас одна система налогообложения
-                "email": to_email,  # e-mail покупателя, если нужно отправить письмо с чеком
-                "amounts": {
-                    "electronic": amount,  # Сумма оплаты электронными деньгами
+            "JsonData": {
+                "CloudPayments": {
+                    "CustomerReceipt": {
+                        "Items": [
+                            {
+                                "label": "Образовательная услуга",  # наименование товара
+                                "price": amount,  # цена
+                                "quantity": 1.00,  # количество
+                                "amount": amount,  # сумма
+                                "vat": 0,  # ставка НДС
+                                "method": 1,  # тег-1214 признак способа расчета
+                                "object": 4,  # тег-1212 признак предмета товара, работы, услуги
+                                "measurementUnit": "шт",  # единица измерения
+                            },
+                        ],
+                        "calculationPlace": "mip.institute",  # место осуществления расчёта
+                        "taxationSystem": 0,  # система налогообложения; необязательный
+                        "email": to_email,  # e-mail покупателя, если нужно отправить письмо с чеком
+                        "amounts": {
+                            "electronic": amount,  # Сумма оплаты электронными деньгами
+                        }
+                    }
                 }
             }
         }
