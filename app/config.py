@@ -18,6 +18,11 @@ class Application(BaseSettings):
 
 
 class CloudPayments(BaseSettings):
+    inn: str = Field(
+        default="9725041321",
+        description="MIP INN",
+        alias="CLOUDPAYMENTS_MIP_INN",
+    )
     public_id: str = Field(
         default="test_public_id",
         description="Cloudpayments public ID",
@@ -32,9 +37,9 @@ class CloudPayments(BaseSettings):
         default="https://api.cloudpayments.ru/payments/get",
         description="Cloudpayments status URL",
     )
-    confirmation_url: str = Field(
-        default="https://api.cloudpayments.ru/payments/confirm",
-        description="Cloudpayments confirmation URL",
+    customer_receipt_url: str = Field(
+        default="https://api.cloudpayments.ru/kkt/receipt",
+        description="Cloudpayments customer receipt URL",
     )
 
 
