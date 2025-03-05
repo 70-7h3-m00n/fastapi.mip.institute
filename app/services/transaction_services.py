@@ -69,7 +69,30 @@ async def confirm_payment(
             "Content-Type": "application/json",
         }
         url = config.cloudpayments.confirmation_url
-        data = {"TransactionId": transaction_id, "Amount": amount}
+        data = {
+            "TransactionId": transaction_id,
+            "Amount": amount,
+            "CustomerReceipt": {
+                "Items": [
+                    {
+                        "label": "Образовательная услуга",  # наименование товара
+                        "price": amount,  # цена
+                        "quantity": 1.00,  # количество
+                        "amount": amount,  # сумма
+                        "vat": 0,  # ставка НДС
+                        "method": 1,  # тег-1214 признак способа расчета
+                        "object": 4,  # тег-1212 признак предмета товара, работы, услуги
+                        "measurementUnit": "шт",  # единица измерения
+                    },
+                ],
+                "calculationPlace": "mip.institute",  # место осуществления расчёта
+                "taxationSystem": 0,  # система налогообложения; необязательный, если у вас одна система налогообложения
+                "email": to_email,  # e-mail покупателя, если нужно отправить письмо с чеком
+                "amounts": {
+                    "electronic": amount,  # Сумма оплаты электронными деньгами
+                }
+            }
+        }
 
         async with AsyncClient() as client:
             response = await client.post(url, json=data, headers=headers)
