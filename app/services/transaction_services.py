@@ -67,7 +67,7 @@ async def confirm_payment(
                     "price": amount,  # цена
                     "quantity": 1.00,  # количество
                     "amount": amount,  # сумма
-                    "vat": "null",  # ставка НДС
+                    "vat": None,  # ставка НДС
                     "method": 1,  # тег-1214 признак способа расчета
                     "object": 4,  # тег-1212 признак предмета товара, работы, услуги
                     "measurementUnit": "шт",  # единица измерения
