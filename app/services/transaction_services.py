@@ -9,7 +9,7 @@ from typing import Any
 from app.config import config
 from app.database.db_actions import mark_email_sent
 from app.logging_init import get_logger
-from app.services.email_services import send_email_success
+from app.services.email_services import send_email
 
 logger = get_logger()
 
@@ -43,7 +43,7 @@ async def get_transaction_status(transaction_id: str) -> dict[str, Any]:
 async def confirm_payment(
     transaction_id: str,
     amount: float,
-    to_email: str,
+    email: str,
     subject: str,
     body: str,
     db: AsyncSession,
@@ -75,7 +75,7 @@ async def confirm_payment(
             ],
             "calculationPlace": "mip.institute",  # место осуществления расчёта
             "taxationSystem": 0,  # система налогообложения; необязательный
-            "email": to_email,  # e-mail покупателя, если нужно отправить письмо с чеком
+            "email": email,  # e-mail покупателя, если нужно отправить письмо с чеком
             "amounts": {
                 "electronic": amount,  # Сумма оплаты электронными деньгами
             }
@@ -87,7 +87,7 @@ async def confirm_payment(
 
     if response.status_code == HTTPStatus.OK and response.json().get("Success"):
         logger.info("Customer receipt was created")
-        mailed = await send_email_success(to_email, subject, body)
+        mailed = await send_email(email, subject, body)
         if mailed:
             logger.info("Email sent successfully")
             await mark_email_sent(db, transaction_id)
