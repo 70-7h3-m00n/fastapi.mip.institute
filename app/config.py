@@ -43,6 +43,11 @@ class CloudPayments(BaseSettings):
     )
 
 
+class Email(BaseSettings):
+    hr_email: str = Field(default="hr@mip.institute", description="HR email", alias="HR_EMAIL")
+    info_email: str = Field(default="info@mip.institute", description="Info email", alias="INFO_EMAIL")
+
+
 class Frontend(BaseSettings):
     users_login_url: str = Field(
         default="https://lms.mip.institute/local/ilogin/rlogin.php",
@@ -126,6 +131,7 @@ class SMTP(BaseSettings):
 class Settings(BaseSettings):
     application: Application = Application()
     cloudpayments: CloudPayments = CloudPayments()
+    email: Email = Email()
     frontend: Frontend = Frontend()
     logging: Logging = Logging()
     postgres: Postgres = Postgres()

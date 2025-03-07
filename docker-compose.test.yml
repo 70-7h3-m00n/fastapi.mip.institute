@@ -2,15 +2,19 @@ version: "3.11"
 
 x-app-environment: &app_environment
   environment:
-    - DB_ECHO=${DB_ECHO}
-    - POSTGRES_USER=${POSTGRES_USER}
-    - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-    - POSTGRES_DB=${POSTGRES_DB}
-    - POSTGRES_HOST=${POSTGRES_HOST}
-    - POSTGRES_PORT=${POSTGRES_PORT}
-    - CLOUDPAYMENTS_PUBLIC_ID=${CLOUDPAYMENTS_PUBLIC_ID}
-    - CLOUDPAYMENTS_API_SECRET=${CLOUDPAYMENTS_API_SECRET}
-    - SMTP_SERVER_PASSWORD=${SMTP_SERVER_PASSWORD}
+    - DEBUG=True
+    - DB_ECHO=True
+    - POSTGRES_USER=mip_default
+    - POSTGRES_PASSWORD=DD54OwPVOYvcDw2lfkGvYerDg7AknuldLnd77XlLVZpWFhiU5jJjFPjjmUAM4jWg
+    - POSTGRES_DB=mip_db
+    - POSTGRES_HOST=postgres
+    - POSTGRES_PORT=5432
+    - CLOUDPAYMENTS_PUBLIC_ID=pk_71dc1898267f56e9b05bf1f955f66
+    - CLOUDPAYMENTS_API_SECRET=cc357cb591da7afde4e65f936160f1f0
+    - SMTP_SERVER_PASSWORD=xlwwyyazouvjiafr
+    - APP_PORT=8001
+    - HR_EMAIL=bratgans@gmail.com
+    - INFO_EMAIL=bratgans@gmail.com
 
 services:
   postgres:
@@ -18,19 +22,16 @@ services:
     image: postgres:16
     restart: always
     ports:
-      - "5433:5432"
-    expose:
-      - "5433"
+      - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
       - ./init-scripts:/docker-entrypoint-initdb.d
-    command:
-      - -p 5433
 
   backend:
     <<: *app_environment
     build:
       context: .
+      dockerfile: Dockerfile
     image: fastapi.mip.backend:test
     restart: always
     ports:

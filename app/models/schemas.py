@@ -1,4 +1,13 @@
-from pydantic import BaseModel
+from typing import Literal
+from pydantic import BaseModel, EmailStr
+
+
+class EmailRequest(BaseModel):
+    mail_type: Literal["hr", "info"]
+    name: str
+    email: EmailStr
+    phone: str
+    message: str
 
 
 class PaymentNotification(BaseModel):

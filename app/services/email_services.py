@@ -7,13 +7,39 @@ import uuid
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
-from app.logging_init import get_logger
 from app.config import config
+from app.logging_init import get_logger
 
 logger = get_logger()
 
 
-async def prepare_message(email: str, first_name: str | None, last_name: str | None) -> tuple[str, str]:
+async def prepare_info_message(
+    mail_type: str, email: str, name: str, phone: str, message: str
+) -> tuple[str, str, str]:
+    if mail_type == "hr":
+        recipient = config.email.hr_email
+        subject = """
+            Предложение о партнёрстве - \n
+            Форма обратной связи: хочу стать частью вашей команды
+        """
+    elif mail_type == "info":
+        recipient = config.email.info_email
+        subject = "Общая информация"
+    else:
+        raise ValueError("Invalid mail_type. Must be 'hr' or 'info'")
+
+    email_body = f"""
+        Имя: {name} \n
+        Телефон: {phone} \n
+        Email: {email} \n
+        \n
+        Сообщение: \n
+        {message}
+    """
+    return recipient, subject, email_body
+
+
+async def prepare_lk_access_message(email: str, first_name: str | None, last_name: str | None) -> tuple[str, str]:
     current_time = int(datetime.datetime.now().timestamp())
     password_uuid = str(uuid.uuid4())[:10]
     k_base_string = f"3ykOQzkL2X647dWw8dDx7h5c{email}{current_time}"
@@ -43,13 +69,13 @@ async def prepare_message(email: str, first_name: str | None, last_name: str | N
     return subject, body
 
 
-def send_email_sync(to_email: str, subject: str, body: str) -> bool:
+def send_email_sync(recipient: str, subject: str, body: str) -> bool:
     try:
         smtp_user = config.smtp.user
 
         msg = MIMEMultipart()
         msg["From"] = smtp_user
-        msg["To"] = to_email
+        msg["To"] = recipient
         msg["Subject"] = subject
 
         msg.attach(MIMEText(body, "plain"))
@@ -60,9 +86,9 @@ def send_email_sync(to_email: str, subject: str, body: str) -> bool:
             server.send_message(msg)
         return True
     except Exception as e:
-        logger.error(f"Failed to send email to address {to_email}: {e}")
+        logger.error(f"Failed to send email to address {recipient}: {e}")
         return False
 
 
-async def send_email_success(to_email: str, subject: str, body: str) -> bool:
-    return await asyncio.to_thread(send_email_sync, to_email, subject, body)
+async def send_email(recipient: str, subject: str, body: str) -> bool:
+    return await asyncio.to_thread(send_email_sync, recipient, subject, body)

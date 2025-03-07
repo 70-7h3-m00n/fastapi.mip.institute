@@ -11,7 +11,7 @@ from app.logging_init import get_logger
 from app.models.db_models import Transaction, User
 from app.models.enums import TransactionStatusEnum
 from app.services.auth_services import verify_credentials
-from app.services.email_services import prepare_message
+from app.services.email_services import prepare_lk_access_message
 from app.services.transaction_services import confirm_payment
 
 logger = get_logger()
@@ -79,7 +79,9 @@ async def payment_notification(  # noqa: C901
             return {"code": 0}
 
     try:
-        subject, body = await prepare_message(email=email, first_name=first_name, last_name=last_name)
+        subject, body = await prepare_lk_access_message(
+            email=email, first_name=first_name, last_name=last_name
+        )
 
         background_tasks.add_task(
             confirm_payment,
