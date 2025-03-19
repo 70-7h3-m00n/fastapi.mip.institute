@@ -1,7 +1,9 @@
 import re
-from logging import Formatter, Logger, LogRecord, getLogger
+from logging import Formatter, Logger, LogRecord
 from logging.config import dictConfig
 from typing import Any, Generator, Iterable
+import logging
+import sys
 
 from app.config import config
 from app.utils import json_dumps
@@ -127,4 +129,18 @@ def setup_logging() -> None:
 
 
 def get_logger() -> Logger:
-    return getLogger("default")
+    logger = logging.getLogger("app")
+    # Only configure if not already configured
+    if not logger.handlers:
+        logger.setLevel(logging.INFO)
+        # Create console handler with a higher log level
+        handler = logging.StreamHandler(sys.stdout)  # Explicitly use stdout
+        handler.setLevel(logging.INFO)
+        # Create formatter
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+        handler.setFormatter(formatter)
+        # Add the handler to the logger
+        logger.addHandler(handler)
+        # Ensure propagation is enabled
+        logger.propagate = True
+    return logger
