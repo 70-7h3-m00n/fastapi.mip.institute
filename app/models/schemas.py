@@ -1,5 +1,18 @@
 from typing import Literal
+from datetime import datetime
+
 from pydantic import BaseModel, EmailStr
+
+from app.models.enums import UserRoleEnum
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
 
 class EmailRequest(BaseModel):
@@ -47,3 +60,23 @@ class PaymentNotification(BaseModel):
     CardProduct: str | None = None
     PaymentMethod: str | None = None
     CustomFields: str | None = None
+
+
+class PromoBase(BaseModel):
+    name: str
+    promo_code: str
+    redirect_url: str
+
+
+class PromoResponse(PromoBase):
+    id: int
+    is_active: bool
+
+
+class UserSchema(BaseModel):
+    id: int
+    email: EmailStr
+    role: UserRoleEnum
+    created_at: datetime
+    first_name: str | None = None
+    last_name: str | None = None
