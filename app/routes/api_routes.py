@@ -1,8 +1,9 @@
 from fastapi import APIRouter
 
+from app.routes.admin_routes import router as admin_router
 from app.routes.auth_routes import router as auth_router
 from app.routes.mail_routes import router as mail_router
-from app.routes.promo_routes import router as promo_router
+from app.routes.clients_routes import router as clients_router
 from app.routes.transaction_routes import router as transaction_router
 
 router = APIRouter()
@@ -29,8 +30,15 @@ router.include_router(
 )
 
 router.include_router(
-    promo_router,
-    prefix="/promo",
-    tags=["Promo"],
+    clients_router,
+    prefix="/clients",
+    tags=["Clients"],
+    include_in_schema=True,
+)
+
+router.include_router(
+    admin_router,
+    prefix="/admin",
+    tags=["Admin"],
     include_in_schema=True,
 )

@@ -1,19 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
-from fastapi.security import HTTPBasicCredentials
 from http import HTTPStatus
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_admin_user
 from app.database.db_init import get_db
-from app.models.schemas import PromoBase, PromoResponse
-from app.models.db_models import User, Promo
-from app.services.auth_services import verify_credentials
+from app.models.schemas import PromoResponse, PromoBase
+from app.models.db_models import Promo, User
 
-router = APIRouter()
+promo_router = APIRouter(prefix="/promo")
 
 
-@router.post("/create", status_code=HTTPStatus.OK)
+@promo_router.post("/create", status_code=HTTPStatus.OK)
 async def create_promo(
     promo_data: PromoBase,
     current_user: User = Depends(get_current_admin_user),
@@ -30,7 +28,7 @@ async def create_promo(
     return promo
 
 
-@router.put("/update/{promo_id}", status_code=HTTPStatus.OK)
+@promo_router.put("/update/{promo_id}", status_code=HTTPStatus.OK)
 async def update_promo(
     promo_id: int,
     promo_data: PromoBase,
@@ -48,7 +46,7 @@ async def update_promo(
     return promo
 
 
-@router.delete("/delete/{promo_id}", status_code=HTTPStatus.OK)
+@promo_router.delete("/delete/{promo_id}", status_code=HTTPStatus.OK)
 async def delete_promo(
     promo_id: int,
     current_user: User = Depends(get_current_admin_user),
@@ -63,7 +61,7 @@ async def delete_promo(
     return None
 
 
-@router.put("/activate/{promo_id}", status_code=HTTPStatus.OK)
+@promo_router.put("/activate/{promo_id}", status_code=HTTPStatus.OK)
 async def activate_promo(
     promo_id: int,
     current_user: User = Depends(get_current_admin_user),
@@ -79,19 +77,10 @@ async def activate_promo(
     return None
 
 
-@router.get("/admin/promos", status_code=HTTPStatus.OK)
+@promo_router.get("/promos", status_code=HTTPStatus.OK)
 async def get_promos(
     current_user: User = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_db),
 ) -> list[PromoResponse]:
     promos = await session.execute(select(Promo))
-    return promos.scalars().all()
-
-
-@router.get("/promos", status_code=HTTPStatus.OK)
-async def get_public_promos(
-    credentials: HTTPBasicCredentials = Depends(verify_credentials),
-    session: AsyncSession = Depends(get_db),
-) -> list[PromoResponse]:
-    promos = await session.execute(select(Promo).where(Promo.is_active.is_(True)))
     return promos.scalars().all()
