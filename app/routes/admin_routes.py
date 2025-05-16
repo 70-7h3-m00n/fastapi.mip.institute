@@ -8,10 +8,10 @@ from app.database.db_init import get_db
 from app.models.schemas import PromoResponse, PromoBase
 from app.models.db_models import Promo, User
 
-promo_router = APIRouter(prefix="/promo")
+router = APIRouter()
 
 
-@promo_router.post("/create", status_code=HTTPStatus.OK)
+@router.post("/promo/create", status_code=HTTPStatus.OK)
 async def create_promo(
     promo_data: PromoBase,
     current_user: User = Depends(get_current_admin_user),
@@ -28,7 +28,7 @@ async def create_promo(
     return promo
 
 
-@promo_router.put("/update/{promo_id}", status_code=HTTPStatus.OK)
+@router.put("/promo/update/{promo_id}", status_code=HTTPStatus.OK)
 async def update_promo(
     promo_id: int,
     promo_data: PromoBase,
@@ -46,7 +46,7 @@ async def update_promo(
     return promo
 
 
-@promo_router.delete("/delete/{promo_id}", status_code=HTTPStatus.OK)
+@router.delete("/promo/delete/{promo_id}", status_code=HTTPStatus.OK)
 async def delete_promo(
     promo_id: int,
     current_user: User = Depends(get_current_admin_user),
@@ -61,7 +61,7 @@ async def delete_promo(
     return None
 
 
-@promo_router.put("/activate/{promo_id}", status_code=HTTPStatus.OK)
+@router.put("/promo/activate/{promo_id}", status_code=HTTPStatus.OK)
 async def activate_promo(
     promo_id: int,
     current_user: User = Depends(get_current_admin_user),
@@ -77,7 +77,7 @@ async def activate_promo(
     return None
 
 
-@promo_router.get("/promos", status_code=HTTPStatus.OK)
+@router.get("/promo/promos", status_code=HTTPStatus.OK)
 async def get_promos(
     current_user: User = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_db),
