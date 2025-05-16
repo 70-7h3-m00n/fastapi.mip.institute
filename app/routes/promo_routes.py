@@ -79,7 +79,7 @@ async def activate_promo(
     return None
 
 
-@router.get("/", status_code=HTTPStatus.OK)
+@router.get("/admin/promos", status_code=HTTPStatus.OK)
 async def get_promos(
     current_user: User = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_db),
