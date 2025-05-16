@@ -12,7 +12,12 @@ from app.config import config
 router = APIRouter()
 
 
-@router.post("/token", response_model=Token)
+@router.post(
+    "/token",
+    summary="Get access token",
+    description="Get access token using email and password.",
+    response_model=Token,
+)
 async def login_for_access_token(
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)

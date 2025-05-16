@@ -11,7 +11,12 @@ from app.models.db_models import Promo, User
 router = APIRouter()
 
 
-@router.post("/promo/create", status_code=HTTPStatus.OK)
+@router.post(
+    "/promo/create",
+    summary="Create promo",
+    description="Create promo. Uses Bearer token for authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def create_promo(
     promo_data: PromoBase,
     current_user: User = Depends(get_current_admin_user),
@@ -28,7 +33,12 @@ async def create_promo(
     return promo
 
 
-@router.put("/promo/update/{promo_id}", status_code=HTTPStatus.OK)
+@router.put(
+    "/promo/update/{promo_id}",
+    summary="Update promo",
+    description="Update promo. Uses Bearer token for authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def update_promo(
     promo_id: int,
     promo_data: PromoBase,
@@ -46,7 +56,12 @@ async def update_promo(
     return promo
 
 
-@router.delete("/promo/delete/{promo_id}", status_code=HTTPStatus.OK)
+@router.delete(
+    "/promo/delete/{promo_id}",
+    summary="Delete promo",
+    description="Delete promo. Uses Bearer token for authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def delete_promo(
     promo_id: int,
     current_user: User = Depends(get_current_admin_user),
@@ -61,7 +76,12 @@ async def delete_promo(
     return None
 
 
-@router.put("/promo/activate/{promo_id}", status_code=HTTPStatus.OK)
+@router.put(
+    "/promo/activate/{promo_id}",
+    summary="Activate/deactivate promo",
+    description="Activate/deactivate promo. Uses Bearer token for authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def activate_promo(
     promo_id: int,
     current_user: User = Depends(get_current_admin_user),
@@ -77,7 +97,12 @@ async def activate_promo(
     return None
 
 
-@router.get("/promo/promos", status_code=HTTPStatus.OK)
+@router.get(
+    "/promo/promos",
+    summary="Get promos",
+    description="Get promos list for admin. Uses Bearer token for authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def get_promos(
     current_user: User = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_db),

@@ -18,7 +18,12 @@ logger = get_logger()
 router = APIRouter()
 
 
-@router.post("/payment-notification", status_code=HTTPStatus.OK)
+@router.post(
+    "/payment-notification",
+    summary="Payment notification",
+    description="Payment notification. Uses Basic authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def payment_notification(  # noqa: C901
     request: Request,
     background_tasks: BackgroundTasks,
@@ -103,7 +108,12 @@ async def payment_notification(  # noqa: C901
     return {"code": 0}
 
 
-@router.post("/resend-get", status_code=HTTPStatus.OK)
+@router.post(
+    "/resend-get",
+    summary="Resend get request",
+    description="Resend get request. Uses Basic authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def resend_get(
     request: Request,
     credentials: HTTPBasicCredentials = Depends(verify_credentials),

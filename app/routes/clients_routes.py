@@ -12,7 +12,12 @@ from app.services.auth_services import verify_credentials
 router = APIRouter()
 
 
-@router.get("/promos", status_code=HTTPStatus.OK)
+@router.get(
+    "/promos",
+    summary="Get public promos",
+    description="Get public promos. Uses Basic authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def get_public_promos(
     credentials: HTTPBasicCredentials = Depends(verify_credentials),
     session: AsyncSession = Depends(get_db),
