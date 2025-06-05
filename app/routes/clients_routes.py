@@ -22,5 +22,6 @@ async def get_public_promos(
     credentials: HTTPBasicCredentials = Depends(verify_credentials),
     session: AsyncSession = Depends(get_db),
 ) -> list[PromoResponse]:
-    promos = await session.execute(select(Promo).where(Promo.is_active.is_(True)))
-    return promos.scalars().all()
+    promos_select = await session.execute(select(Promo).where(Promo.is_active.is_(True)))
+    promos = promos_select.scalars().all()
+    return [PromoResponse.model_validate(promo) for promo in promos]

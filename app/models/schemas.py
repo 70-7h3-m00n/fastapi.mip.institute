@@ -1,9 +1,11 @@
-from typing import Literal
+from typing import Generic, Literal, TypeVar
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from app.models.enums import UserRoleEnum
+
+T = TypeVar("T")
 
 
 class Token(BaseModel):
@@ -66,11 +68,16 @@ class PromoBase(BaseModel):
     name: str
     promo_code: str
     redirect_url: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class PromoResponse(PromoBase):
     id: int
     is_active: bool
+
+    class Config:
+        from_attributes = True
 
 
 class UserSchema(BaseModel):
@@ -80,3 +87,15 @@ class UserSchema(BaseModel):
     created_at: datetime
     first_name: str | None = None
     last_name: str | None = None
+
+
+class PaginationResponse(BaseModel, Generic[T]):
+    items: list[T]
+    count: int
+    page: int
+    per_page: int
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        from_attributes=True
+    )

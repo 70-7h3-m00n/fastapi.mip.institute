@@ -1,11 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from datetime import datetime, timezone
+from fastapi import APIRouter, Depends, HTTPException, Query
 from http import HTTPStatus
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_admin_user
 from app.database.db_init import get_db
-from app.models.schemas import PromoResponse, PromoBase
+from app.models.schemas import PromoResponse, PromoBase, PaginationResponse
 from app.models.db_models import Promo, User
 
 router = APIRouter()
@@ -52,6 +53,7 @@ async def update_promo(
     promo.name = promo_data.name
     promo.promo_code = promo_data.promo_code
     promo.redirect_url = promo_data.redirect_url
+    promo.updated_at = datetime.now(timezone.utc)
     await session.commit()
     return promo
 
@@ -104,8 +106,20 @@ async def activate_promo(
     status_code=HTTPStatus.OK,
 )
 async def get_promos(
+    page: int = Query(1, ge=1),
+    per_page: int = Query(10, ge=1),
     current_user: User = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_db),
-) -> list[PromoResponse]:
-    promos = await session.execute(select(Promo))
-    return promos.scalars().all()
+) -> PaginationResponse[PromoResponse]:
+    promos_select = await session.execute(
+        select(Promo).order_by(Promo.created_at.desc()).offset((page - 1) * per_page).limit(per_page)
+    )
+    promos = promos_select.scalars().all()
+    count_select = await session.execute(select(func.count(Promo.id)))
+    count = count_select.scalar_one()
+    return PaginationResponse(
+        items=[PromoResponse.model_validate(promo) for promo in promos],
+        count=count,
+        page=page,
+        per_page=per_page
+    )
