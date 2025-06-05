@@ -27,7 +27,7 @@ async def create_promo(
         name=promo_data.name,
         promo_code=promo_data.promo_code,
         redirect_url=promo_data.redirect_url,
-        is_active=True,
+        is_active=promo_data.is_active,
     )
     session.add(promo)
     await session.commit()

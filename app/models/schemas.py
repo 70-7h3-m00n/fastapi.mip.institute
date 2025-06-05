@@ -68,13 +68,13 @@ class PromoBase(BaseModel):
     name: str
     promo_code: str
     redirect_url: str
-    created_at: datetime
-    updated_at: datetime
+    is_active: bool
 
 
 class PromoResponse(PromoBase):
     id: int
-    is_active: bool
+    created_at: datetime
+    updated_at: datetime
 
     class Config:
         from_attributes = True
