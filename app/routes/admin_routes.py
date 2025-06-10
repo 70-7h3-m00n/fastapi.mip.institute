@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
 from fastapi import APIRouter, Depends, HTTPException, Query
 from http import HTTPStatus
-from sqlalchemy import select, func
+from sqlalchemy import select, func, or_
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.deps import get_current_admin_user
@@ -108,11 +108,20 @@ async def activate_promo(
 async def get_promos(
     page: int = Query(1, ge=1),
     per_page: int = Query(10, ge=1),
+    search: str = Query(None),
     current_user: User = Depends(get_current_admin_user),
     session: AsyncSession = Depends(get_db),
 ) -> PaginationResponse[PromoResponse]:
+    query = select(Promo).order_by(Promo.created_at.desc())
+    if search:
+        query = query.where(
+            or_(
+                Promo.name.ilike(f"%{search}%"),
+                Promo.promo_code.ilike(f"%{search}%")
+            )
+        )
     promos_select = await session.execute(
-        select(Promo).order_by(Promo.created_at.desc()).offset((page - 1) * per_page).limit(per_page)
+        query.offset((page - 1) * per_page).limit(per_page)
     )
     promos = promos_select.scalars().all()
     count_select = await session.execute(select(func.count(Promo.id)))
