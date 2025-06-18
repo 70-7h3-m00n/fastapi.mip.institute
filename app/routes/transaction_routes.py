@@ -18,7 +18,12 @@ logger = get_logger()
 router = APIRouter()
 
 
-@router.post("/payment-notification", status_code=HTTPStatus.OK)
+@router.post(
+    "/payment-notification",
+    summary="Payment notification",
+    description="Payment notification. Uses Basic authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def payment_notification(  # noqa: C901
     request: Request,
     background_tasks: BackgroundTasks,
@@ -101,3 +106,32 @@ async def payment_notification(  # noqa: C901
         )
 
     return {"code": 0}
+
+
+@router.post(
+    "/resend-get",
+    summary="Resend get request",
+    description="Resend get request. Uses Basic authentication.",
+    status_code=HTTPStatus.OK,
+)
+async def resend_get(
+    request: Request,
+    credentials: HTTPBasicCredentials = Depends(verify_credentials),
+) -> dict[str, str]:
+    """Handle POST requests from Tilda webhook with JSON data."""
+    try:
+        # Get JSON data from the request
+        json_data = await request.json()
+
+        # Log all received data
+        logger.info(f"Received Tilda webhook data: {json_data}")
+
+        # For now, just acknowledge receipt
+        return {"status": "success", "message": "Data received and logged"}
+
+    except Exception as e:
+        logger.error(f"Error processing Tilda webhook: {e}")
+        raise HTTPException(
+            status_code=HTTPStatus.INTERNAL_SERVER_ERROR,
+            detail=f"Error processing webhook: {str(e)}"
+        )

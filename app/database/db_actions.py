@@ -1,12 +1,16 @@
 from typing import Any
+from datetime import datetime, timezone
 
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.config import config
 from app.database.db_init import Base
 from app.logging_init import get_logger
-from app.models.db_models import Transaction
+from app.models.db_models import Transaction, User
+from app.models.enums import UserRoleEnum
+from app.services.auth_services import get_password_hash
 
 logger = get_logger()
 
@@ -59,3 +63,37 @@ async def mark_email_sent(db: AsyncSession, transaction_id: str) -> None:
         await db.commit()
     else:
         logger.error(f"Transaction {transaction_id} was not found")
+
+
+async def init_admin(db: AsyncSession) -> None:
+    """
+    Initialize admin user if it doesn't exist.
+    """
+    try:
+        admin_email = config.auth.admin_email
+        admin_password = config.auth.admin_password
+        result = await db.execute(
+            select(User).where(User.email == admin_email)
+        )
+        admin = result.scalars().first()
+
+        if not admin:
+            hashed_password = get_password_hash(admin_password)
+            admin = User(
+                email=admin_email,
+                password=hashed_password,
+                role=UserRoleEnum.ADMIN,
+                created_at=datetime.now(timezone.utc),
+                first_name="MIP",
+                last_name="Admin",
+            )
+            db.add(admin)
+            await db.commit()
+            logger.info("Admin user created successfully")
+        else:
+            logger.info("Admin user already exists")
+
+    except Exception as e:
+        logger.error(f"Error initializing admin user: {str(e)}")
+        await db.rollback()
+        raise

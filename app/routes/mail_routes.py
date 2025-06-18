@@ -9,7 +9,12 @@ from app.services.email_services import prepare_info_message, send_email
 router = APIRouter()
 
 
-@router.post("/send", status_code=HTTPStatus.OK)
+@router.post(
+    "/send",
+    summary="Send email",
+    description="Send email to stated email address. Uses Basic authentication.",
+    status_code=HTTPStatus.OK,
+)
 async def send_mail(
     request: EmailRequest,
     credentials: HTTPBasicCredentials = Depends(verify_credentials),

@@ -66,5 +66,5 @@ networks:
     name: institute_network_dev
     driver: bridge
     ipam:
-     config:
-       - subnet: 10.20.0.0/16
+      config:
+        - subnet: 10.20.0.0/16

@@ -1,5 +1,20 @@
-from typing import Literal
-from pydantic import BaseModel, EmailStr
+from typing import Generic, Literal, TypeVar
+from datetime import datetime
+
+from pydantic import BaseModel, EmailStr, ConfigDict
+
+from app.models.enums import UserRoleEnum
+
+T = TypeVar("T")
+
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    email: str | None = None
 
 
 class EmailRequest(BaseModel):
@@ -47,3 +62,40 @@ class PaymentNotification(BaseModel):
     CardProduct: str | None = None
     PaymentMethod: str | None = None
     CustomFields: str | None = None
+
+
+class PromoBase(BaseModel):
+    name: str
+    promo_code: str
+    redirect_url: str
+    is_active: bool
+
+
+class PromoResponse(PromoBase):
+    id: int
+    created_at: datetime
+    updated_at: datetime
+
+    class Config:
+        from_attributes = True
+
+
+class UserSchema(BaseModel):
+    id: int
+    email: EmailStr
+    role: UserRoleEnum
+    created_at: datetime
+    first_name: str | None = None
+    last_name: str | None = None
+
+
+class PaginationResponse(BaseModel, Generic[T]):
+    items: list[T]
+    count: int
+    page: int
+    per_page: int
+
+    model_config = ConfigDict(
+        arbitrary_types_allowed=True,
+        from_attributes=True
+    )

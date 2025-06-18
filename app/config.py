@@ -13,8 +13,6 @@ class Application(BaseSettings):
     )
     api_prefix: str = Field(default="/api", description="API prefix")
     docs_url: str = Field(default="/api/docs", description="Docs url")
-    auth_username: str = Field(default="mip.admin", description="Auth username", alias="AUTH_USERNAME")
-    auth_password: str = Field(default="faksdfjw329f8d7u4%^*y4o2j4", description="Auth password", alias="AUTH_PASSWORD")
 
 
 class CloudPayments(BaseSettings):
@@ -128,6 +126,16 @@ class SMTP(BaseSettings):
     )
 
 
+class AuthConfig:
+    secret_key: str = "1yXk@2GfcFRMD!t$n66M1aB*93>EEgTl"
+    algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60
+    admin_email: str = "developers@mip.institute"
+    admin_password: str = "mipAdm1nP@ssw0rd"
+    auth_username: str = "mip.admin"
+    auth_password: str = "faksdfjw329f8d7u4%^*y4o2j4"
+
+
 class Settings(BaseSettings):
     application: Application = Application()
     cloudpayments: CloudPayments = CloudPayments()
@@ -136,6 +144,7 @@ class Settings(BaseSettings):
     logging: Logging = Logging()
     postgres: Postgres = Postgres()
     smtp: SMTP = SMTP()
+    auth: AuthConfig = AuthConfig()
 
 
 config = Settings()
