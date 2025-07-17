@@ -33,6 +33,7 @@ class Promo(Base):
     promo_code: Mapped[str] = mapped_column(String, nullable=False)
     redirect_url: Mapped[str] = mapped_column(String, nullable=False)
     is_active: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
+    show_sticky_bottom: Mapped[bool] = mapped_column(Boolean, nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         server_default=func.now()

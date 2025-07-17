@@ -69,6 +69,7 @@ class PromoBase(BaseModel):
     promo_code: str
     redirect_url: str
     is_active: bool
+    show_sticky_bottom: bool
 
 
 class PromoResponse(PromoBase):

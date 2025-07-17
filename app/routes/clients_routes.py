@@ -38,7 +38,9 @@ async def get_public_promo_by_name(
     credentials: HTTPBasicCredentials = Depends(verify_credentials),
     session: AsyncSession = Depends(get_db),
 ) -> PromoResponse:
-    promo_select = await session.execute(select(Promo).where(Promo.name == promo_name))
+    promo_select = await session.execute(
+        select(Promo).where(Promo.name == promo_name, Promo.is_active.is_(True))
+    )
     promo = promo_select.scalar_one_or_none()
     if promo is None:
         raise HTTPException(status_code=HTTPStatus.NOT_FOUND, detail="Promo not found")
