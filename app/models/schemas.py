@@ -23,6 +23,8 @@ class EmailRequest(BaseModel):
     email: EmailStr
     phone: str
     message: str
+    consent: bool | None = None
+    subscribe_news: bool | None = None
 
 
 class PaymentNotification(BaseModel):

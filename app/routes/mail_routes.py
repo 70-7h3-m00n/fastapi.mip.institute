@@ -21,7 +21,13 @@ async def send_mail(
 ) -> Response:
     try:
         recipient, subject, body = await prepare_info_message(
-            request.mail_type, request.email, request.name, request.phone, request.message
+            request.mail_type,
+            request.email,
+            request.name,
+            request.phone,
+            request.message,
+            request.consent,
+            request.subscribe_news
         )
 
         success = await send_email(

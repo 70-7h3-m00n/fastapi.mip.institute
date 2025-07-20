@@ -14,7 +14,7 @@ logger = get_logger()
 
 
 async def prepare_info_message(
-    mail_type: str, email: str, name: str, phone: str, message: str
+    mail_type: str, email: str, name: str, phone: str, message: str, consent: bool, subscribe_news: bool
 ) -> tuple[str, str, str]:
     if mail_type == "hr":
         recipient = config.email.hr_email
@@ -28,10 +28,17 @@ async def prepare_info_message(
     else:
         raise ValueError("Invalid mail_type. Must be 'hr' or 'info'")
 
+    bool_fields = ""
+    if consent is not None:
+        bool_fields += "Пользователь дал согласие на обработку персональных данных: " + ("Да" if consent else "Нет") + "\n"  # noqa: E501
+    if subscribe_news is not None:
+        bool_fields += "Пользователь дал согласие на получение новостей, полезных материалов, рекламных предложений: " + ("Да" if subscribe_news else "Нет") + "\n"  # noqa: E501
+
     email_body = f"""
         Имя: {name} \n
         Телефон: {phone} \n
         Email: {email} \n
+        {bool_fields}
         \n
         Сообщение: \n
         {message}
