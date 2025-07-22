@@ -23,6 +23,8 @@ class EmailRequest(BaseModel):
     email: EmailStr
     phone: str
     message: str
+    consent: bool | None = None
+    subscribe_news: bool | None = None
 
 
 class PaymentNotification(BaseModel):
@@ -69,6 +71,7 @@ class PromoBase(BaseModel):
     promo_code: str
     redirect_url: str
     is_active: bool
+    show_sticky_bottom: bool
 
 
 class PromoResponse(PromoBase):

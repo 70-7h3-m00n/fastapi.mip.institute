@@ -28,6 +28,7 @@ async def create_promo(
         promo_code=promo_data.promo_code,
         redirect_url=promo_data.redirect_url,
         is_active=promo_data.is_active,
+        show_sticky_bottom=promo_data.show_sticky_bottom,
     )
     session.add(promo)
     await session.commit()
@@ -53,6 +54,8 @@ async def update_promo(
     promo.name = promo_data.name
     promo.promo_code = promo_data.promo_code
     promo.redirect_url = promo_data.redirect_url
+    promo.show_sticky_bottom = promo_data.show_sticky_bottom
+    promo.is_active = promo_data.is_active
     promo.updated_at = datetime.now(timezone.utc)
     await session.commit()
     return promo
